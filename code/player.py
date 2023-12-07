@@ -5,17 +5,10 @@ from settings import *
 class Player(pygame.sprite.Sprite):
 	def __init__(self,pos,groups,obstacle_sprites):
 		super().__init__(groups)
-        # Get the directory of the current file (tile.py)
-		current_file_dir = os.path.dirname(os.path.abspath(__file__))
-        # Build the absolute path to the rock.png image
-		image_path = os.path.join(current_file_dir, '../graphics/test/player.png')
-        # Ensure the path is in the correct format for the current operating system
-		normalized_path = os.path.normpath(image_path)
-        # Load the image using the normalized path
-		self.image = pygame.image.load(normalized_path).convert_alpha()
+		self.image = pygame.image.load('NinjaAdventure/graphics/test/player.png').convert_alpha()
 		self.rect = self.image.get_rect(topleft=pos)
-		#This was only, to load the picture...
-######################################################################################
+		self.hitbox = self.rect.inflate(0,-26)
+
 
 		self.speed = 5
 		self.direction =pygame.math.Vector2() 		# if () is empty, it means X0, Y0
@@ -43,28 +36,29 @@ class Player(pygame.sprite.Sprite):
 		if self.direction.magnitude() != 0:
 			self.direction = self.direction.normalize()
 
-		self.rect.x += self.direction.x * speed
+		self.hitbox.x += self.direction.x * speed
 		self.collision("horizontal")
-		self.rect.y += self.direction.y * speed
+		self.hitbox.y += self.direction.y * speed
 		self.collision("vertical")
-		#self.rect.center += self.direction * speed
+		self.rect.center = self.hitbox.center
+
 
 	def collision(self,direction):
 		if direction == "horizontal":
 			for sprite in self.obstacle_sprites:
-				if sprite.rect.colliderect(self.rect):
+				if sprite.hitbox.colliderect(self.hitbox):
 					if self.direction.x > 0: #moving right
-						self.rect.right = sprite.rect.left
+						self.hitbox.right = sprite.hitbox.left
 					if self.direction.x < 0: #moving left
-						self.rect.left = sprite.rect.right
+						self.hitbox.left = sprite.hitbox.right
 
 		if direction == "vertical":
 			for sprite in self.obstacle_sprites:
-				if sprite.rect.colliderect(self.rect):
+				if sprite.hitbox.colliderect(self.hitbox):
 					if self.direction.y > 0: #moving down
-						self.rect.bottom = sprite.rect.top
+						self.hitbox.bottom = sprite.hitbox.top
 					if self.direction.y < 0: #moving up
-						self.rect.top = sprite.rect.bottom
+						self.hitbox.top = sprite.hitbox.bottom
 					
 
 	def update(self):
