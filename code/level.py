@@ -5,6 +5,7 @@ from player import Player
 from debug import debug
 from support import *
 from random import choice
+from weapon import Weapon 
 
 class Level:
 	def __init__(self):
@@ -15,6 +16,9 @@ class Level:
 		#sprite group setup
 		self.visible_sprites = YsortCameraGroup()
 		self.obstacle_sprites = pygame.sprite.Group()
+
+		# attack sprites
+		self.current_attack = None
 		
 		#sprite setup
 		self.create_map()
@@ -47,11 +51,16 @@ class Level:
 							surf = graphics['objects'][int(col)]
 							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
 							
-		self.player = Player((2000,1430),[self.visible_sprites], self.obstacle_sprites)			
+		self.player = Player((2000,1430),[self.visible_sprites], self.obstacle_sprites,self.create_attack)			
+
+	def create_attack(self):
+		Weapon(self.player,[self.visible_sprites])
+
 	def run(self):
 		# update and draw the game
 		self.visible_sprites.custom_draw(self.player)
 		self.visible_sprites.update()
+		debug(self.player.status)
 
 class YsortCameraGroup(pygame.sprite.Group):
 	def __init__(self):
@@ -66,7 +75,6 @@ class YsortCameraGroup(pygame.sprite.Group):
 		#creating the floor
 		self.floor_surf = pygame.image.load("NinjaAdventure/graphics/tilemap/ground.png").convert()
 		self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
-
 
 	def custom_draw(self, player):
 
