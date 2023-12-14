@@ -35,6 +35,7 @@ class Level:
 				'boundary': import_csv_layout('NinjaAdventure/map/map_FloorBlocks.csv'),
 				'grass': import_csv_layout('NinjaAdventure/map/map_Grass.csv'),
 				'object': import_csv_layout('NinjaAdventure/map/map_Objects.csv'),
+				'entities': import_csv_layout('')
 		}
 		graphics = {
 				'grass': import_folder('NinjaAdventure/graphics/Grass'),
