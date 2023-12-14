@@ -9,7 +9,7 @@ class Entity(pygame.sprite.Sprite):
 
 	def move(self, speed):
 		if self.direction.magnitude() != 0:
-			self.direction = self.direction.normalize()
+			self.direction = self.direction.normalize() # can't normalize a vector with a length of 0.
 
 		self.hitbox.x += self.direction.x * speed
 		self.collision("horizontal")

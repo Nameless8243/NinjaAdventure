@@ -1,4 +1,4 @@
-# https://www.youtube.com/watch?v=QU1pPzEGrqw&t=382s	4:00:00
+# https://www.youtube.com/watch?v=QU1pPzEGrqw&t=382s	4:46:00
 
 import pygame, sys
 from settings import *
