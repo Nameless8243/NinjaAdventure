@@ -140,3 +140,7 @@ class Enemy(Entity):		# inherited from entity, means it has the attributes of En
 	def enemy_update(self,player):
 		self.get_status(player)
 		self.actions(player)
+
+		self.image = pygame.surface((64,64))
+		self.rect = self.image.get_rect(topleft = pos)
+

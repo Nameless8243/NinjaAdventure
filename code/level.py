@@ -4,17 +4,12 @@ from tile import Tile
 from player import Player
 from debug import debug
 from support import *
-<<<<<<< Updated upstream
-=======
 from random import choice, randint
 from weapon import Weapon 
 from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
-
-
->>>>>>> Stashed changes
 
 class Level:
 	def __init__(self):
@@ -25,12 +20,16 @@ class Level:
 		#sprite group setup
 		self.visible_sprites = YsortCameraGroup()
 		self.obstacle_sprites = pygame.sprite.Group()
+
+		# attack sprites
+		self.current_attack = None
+
+		# attack sprites
+		self.current_attack = None
 		
 		#sprite setup
 		self.create_map()
 
-<<<<<<< Updated upstream
-=======
 		# user interface
 		self.ui = UI()
 
@@ -38,15 +37,16 @@ class Level:
 		self.animation_player = AnimationPlayer()
 		self.magic_player = MagicPlayer(self.animation_player)
 
->>>>>>> Stashed changes
 	def create_map(self):
 		layouts = {
 				'boundary': import_csv_layout('NinjaAdventure/map/map_FloorBlocks.csv'),
 				'grass': import_csv_layout('NinjaAdventure/map/map_Grass.csv'),
 				'object': import_csv_layout('NinjaAdventure/map/map_Objects.csv'),
+				'entities': import_csv_layout('')
 		}
 		graphics = {
-				'grass': import_folder('NinjaAdventure/graphics/Grass')
+				'grass': import_folder('NinjaAdventure/graphics/Grass'),
+				'objects': import_folder('NinjaAdventure/graphics/objects'),
 		}
 		
 		for style, layout in layouts.items():
@@ -59,17 +59,17 @@ class Level:
 							Tile((x,y), [self.obstacle_sprites],'invisible')
 						if style == 'grass':
 							# create a grass tile
-							pass
+							random_grass_image = choice(graphics['grass'])
+							Tile((x,y), [self.visible_sprites,self.obstacle_sprites],'grass',random_grass_image)
 						if style == 'object':
 							# create an object tile
-<<<<<<< Updated upstream
 							pass
 		# 		if col == 'x':
 		# 			Tile((x,y),[self.visible_sprites,self.obstacle_sprites])
 		# 		if col == 'p':
 		# 			self.player = Player((x,y),[self.visible_sprites], self.obstacle_sprites)
 		self.player = Player((2000,1430),[self.visible_sprites], self.obstacle_sprites)			
-=======
+
 							surf = graphics['objects'][int(col)]
 							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
 							
@@ -104,6 +104,26 @@ class Level:
 
 		if style == 'flame':
 			self.magic_player.flame(self.player,cost,[self.visible_sprites,self.attack_sprites])
+=======
+							surf = graphics['objects'][int(col)]
+							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
+							
+		self.player = Player(
+			(2000,1430),
+			[self.visible_sprites], 
+			self.obstacle_sprites,
+			self.create_attack,
+			self.destroy_attack,
+			self.create_magic)
+
+	def create_attack(self):
+		self.current_attack = Weapon(self.player,[self.visible_sprites])
+
+	def create_magic(self,style,strength,cost):
+		print(style)
+		print(strength)
+		print(cost)
+
 
 	def destroy_attack(self):
 		if self.current_attack:
@@ -138,11 +158,11 @@ class Level:
 
 		self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
 
->>>>>>> Stashed changes
 	def run(self):
 		# update and draw the game
 		self.visible_sprites.custom_draw(self.player)
 		self.visible_sprites.update()
+		self.ui.display(self.player)
 
 class YsortCameraGroup(pygame.sprite.Group):
 	def __init__(self):
@@ -157,7 +177,6 @@ class YsortCameraGroup(pygame.sprite.Group):
 		#creating the floor
 		self.floor_surf = pygame.image.load("NinjaAdventure/graphics/tilemap/ground.png").convert()
 		self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
-
 
 	def custom_draw(self, player):
 
