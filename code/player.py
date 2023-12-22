@@ -159,9 +159,22 @@ class Player(Entity):
 		self.image = animation[int(self.frame_index)] 
 		self.rect = self.image.get_rect(center = self.hitbox.center)
 
+	def get_full_magic_damage(self):
+		base_damage = self.stats['magic']
+		spell_damage = magic_data[self.magic]['strength']
+		return base_damage + spell_damage
+
+	def energy_recovery(self):
+		if self.energy < self.stats['energy']:
+			self.energy += 0.01 * self.stats['magic']
+		else:
+			self.energy = self.stats['energy']
+
 	def update(self):
 		self.input()
+		self.move(self.speed)
 		self.cooldowns()
 		self.get_status()
 		self.animate()
 		self.move(self.speed)
+		self.energy_recovery()

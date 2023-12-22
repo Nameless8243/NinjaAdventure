@@ -4,9 +4,12 @@ from tile import Tile
 from player import Player
 from debug import debug
 from support import *
-from random import choice
+from random import choice, randint
 from weapon import Weapon 
 from ui import UI
+from enemy import Enemy
+from particles import AnimationPlayer
+from magic import MagicPlayer
 
 class Level:
 	def __init__(self):
@@ -29,6 +32,10 @@ class Level:
 
 		# user interface
 		self.ui = UI()
+
+		# particles
+		self.animation_player = AnimationPlayer()
+		self.magic_player = MagicPlayer(self.animation_player)
 
 	def create_map(self):
 		layouts = {
@@ -56,6 +63,48 @@ class Level:
 							Tile((x,y), [self.visible_sprites,self.obstacle_sprites],'grass',random_grass_image)
 						if style == 'object':
 							# create an object tile
+							pass
+		# 		if col == 'x':
+		# 			Tile((x,y),[self.visible_sprites,self.obstacle_sprites])
+		# 		if col == 'p':
+		# 			self.player = Player((x,y),[self.visible_sprites], self.obstacle_sprites)
+		self.player = Player((2000,1430),[self.visible_sprites], self.obstacle_sprites)			
+
+							surf = graphics['objects'][int(col)]
+							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
+							
+						if style == 'entities':
+							if col == '394':
+								self.player = Player(
+									(x,y),
+									[self.visible_sprites], 
+									self.obstacle_sprites,
+									self.create_attack,
+									self.destroy_attack,
+									self.create_magic)
+							else:
+								if col == '390': monster_name = 'bamboo'
+								elif col == '391': monster_name = 'spirit'
+								elif col == '392': monster_name = 'raccoon'
+								else: monster_name = 'squid'
+								Enemy(
+									monster_name,
+			  						(x,y),
+									[self.visible_sprites,self.attackable_sprites],		# the enemies are in visible_sprites and in attackable_sprites
+									self.obstacle_sprites,
+									self.damage_player,
+									self.trigger_death_particles)
+
+	def create_attack(self):
+		self.current_attack = Weapon(self.player,[self.visible_sprites, self.attack_sprites])	# create_attack is in visible sprites and also in attack_sprites
+
+	def create_magic(self,style,strength,cost):
+		if style == 'heal':
+			self.magic_player.heal(self.player,strength,cost,[self.visible_sprites])
+
+		if style == 'flame':
+			self.magic_player.flame(self.player,cost,[self.visible_sprites,self.attack_sprites])
+=======
 							surf = graphics['objects'][int(col)]
 							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
 							
@@ -75,10 +124,39 @@ class Level:
 		print(strength)
 		print(cost)
 
+
 	def destroy_attack(self):
 		if self.current_attack:
 			self.current_attack.kill()
 		self.current_attack = None
+
+
+	def player_attack_logic(self):
+		if self.attack_sprites:
+			for attack_sprite in self.attack_sprites:
+				collision_sprites = pygame.sprite.spritecollide(attack_sprite,self.attackable_sprites,False)	# pygame.sprite.spritecollide(sprite,group,DOKILL) = if "sprite" collide with "group" then "DOKILL", if DOKILL is true then it destroys every sprite.
+				if collision_sprites:		# if collision_sprites exist
+					for target_sprite in collision_sprites:
+						if target_sprite.sprite_type == 'grass':
+							pos = target_sprite.rect.center
+							offset = pygame.math.Vector2(0,75)
+							for leaf in range(randint(3,6)):
+								self.animation_player.create_grass_particles(pos - offset,[self.visible_sprites])
+							target_sprite.kill()
+						else:
+							target_sprite.get_damage(self.player,attack_sprite.sprite_type)
+
+
+	def damage_player(self,amount,attack_type):
+		if self.player.vulnerable:
+			self.player.health -= amount
+			self.player.vulnerable = False
+			self.player.hurt_time = pygame.time.get_ticks()
+			self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
+
+	def trigger_death_particles(self,pos,particle_type):
+
+		self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
 
 	def run(self):
 		# update and draw the game
