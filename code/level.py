@@ -1,83 +1,81 @@
-import pygame
+import pygame 
 from settings import *
 from tile import Tile
 from player import Player
 from debug import debug
 from support import *
-<<<<<<< Updated upstream
-=======
 from random import choice, randint
-from weapon import Weapon 
+from weapon import Weapon
 from ui import UI
 from enemy import Enemy
 from particles import AnimationPlayer
 from magic import MagicPlayer
-
-
->>>>>>> Stashed changes
+from upgrade import Upgrade
 
 class Level:
 	def __init__(self):
-		
-		#get the display surface
-		self.display_surface = pygame.display.get_surface()
 
-		#sprite group setup
-		self.visible_sprites = YsortCameraGroup()
+		# get the display surface 
+		self.display_surface = pygame.display.get_surface()
+		self.game_paused = False
+
+		# sprite group setup
+		self.visible_sprites = YSortCameraGroup()
 		self.obstacle_sprites = pygame.sprite.Group()
-		
-		#sprite setup
+
+		# attack sprites
+		self.current_attack = None
+		self.attack_sprites = pygame.sprite.Group()
+		self.attackable_sprites = pygame.sprite.Group()
+
+		# sprite setup
 		self.create_map()
 
-<<<<<<< Updated upstream
-=======
-		# user interface
+		# user interface 
 		self.ui = UI()
+		self.upgrade = Upgrade(self.player)
 
 		# particles
 		self.animation_player = AnimationPlayer()
 		self.magic_player = MagicPlayer(self.animation_player)
 
->>>>>>> Stashed changes
 	def create_map(self):
 		layouts = {
-				'boundary': import_csv_layout('NinjaAdventure/map/map_FloorBlocks.csv'),
-				'grass': import_csv_layout('NinjaAdventure/map/map_Grass.csv'),
-				'object': import_csv_layout('NinjaAdventure/map/map_Objects.csv'),
+			'boundary': import_csv_layout('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/map/map_FloorBlocks.csv'),
+			'grass': import_csv_layout('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/map/map_Grass.csv'),
+			'object': import_csv_layout('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/map/map_Objects.csv'),
+			'entities': import_csv_layout('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/map/map_Entities.csv')
 		}
 		graphics = {
-				'grass': import_folder('NinjaAdventure/graphics/Grass')
+			'grass': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/Grass'),
+			'objects': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/objects')
 		}
-		
-		for style, layout in layouts.items():
-			for row_index, row in enumerate(layout):
+
+		for style,layout in layouts.items():
+			for row_index,row in enumerate(layout):
 				for col_index, col in enumerate(row):
 					if col != '-1':
 						x = col_index * TILESIZE
 						y = row_index * TILESIZE
-						if style == 'boundary': 
-							Tile((x,y), [self.obstacle_sprites],'invisible')
+						if style == 'boundary':
+							Tile((x,y),[self.obstacle_sprites],'invisible')
 						if style == 'grass':
-							# create a grass tile
-							pass
+							random_grass_image = choice(graphics['grass'])
+							Tile(
+								(x,y),
+								[self.visible_sprites,self.obstacle_sprites,self.attackable_sprites],
+								'grass',
+								random_grass_image)
+
 						if style == 'object':
-							# create an object tile
-<<<<<<< Updated upstream
-							pass
-		# 		if col == 'x':
-		# 			Tile((x,y),[self.visible_sprites,self.obstacle_sprites])
-		# 		if col == 'p':
-		# 			self.player = Player((x,y),[self.visible_sprites], self.obstacle_sprites)
-		self.player = Player((2000,1430),[self.visible_sprites], self.obstacle_sprites)			
-=======
 							surf = graphics['objects'][int(col)]
-							Tile((x,y),[self.visible_sprites,self.obstacle_sprites], 'object',surf)
-							
+							Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'object',surf)
+
 						if style == 'entities':
 							if col == '394':
 								self.player = Player(
 									(x,y),
-									[self.visible_sprites], 
+									[self.visible_sprites],
 									self.obstacle_sprites,
 									self.create_attack,
 									self.destroy_attack,
@@ -85,18 +83,20 @@ class Level:
 							else:
 								if col == '390': monster_name = 'bamboo'
 								elif col == '391': monster_name = 'spirit'
-								elif col == '392': monster_name = 'raccoon'
+								elif col == '392': monster_name ='raccoon'
 								else: monster_name = 'squid'
 								Enemy(
 									monster_name,
-			  						(x,y),
-									[self.visible_sprites,self.attackable_sprites],		# the enemies are in visible_sprites and in attackable_sprites
+									(x,y),
+									[self.visible_sprites,self.attackable_sprites],
 									self.obstacle_sprites,
 									self.damage_player,
-									self.trigger_death_particles)
+									self.trigger_death_particles,
+									self.add_exp)
 
 	def create_attack(self):
-		self.current_attack = Weapon(self.player,[self.visible_sprites, self.attack_sprites])	# create_attack is in visible sprites and also in attack_sprites
+		
+		self.current_attack = Weapon(self.player,[self.visible_sprites,self.attack_sprites])
 
 	def create_magic(self,style,strength,cost):
 		if style == 'heal':
@@ -110,12 +110,11 @@ class Level:
 			self.current_attack.kill()
 		self.current_attack = None
 
-
 	def player_attack_logic(self):
 		if self.attack_sprites:
 			for attack_sprite in self.attack_sprites:
-				collision_sprites = pygame.sprite.spritecollide(attack_sprite,self.attackable_sprites,False)	# pygame.sprite.spritecollide(sprite,group,DOKILL) = if "sprite" collide with "group" then "DOKILL", if DOKILL is true then it destroys every sprite.
-				if collision_sprites:		# if collision_sprites exist
+				collision_sprites = pygame.sprite.spritecollide(attack_sprite,self.attackable_sprites,False)
+				if collision_sprites:
 					for target_sprite in collision_sprites:
 						if target_sprite.sprite_type == 'grass':
 							pos = target_sprite.rect.center
@@ -125,7 +124,6 @@ class Level:
 							target_sprite.kill()
 						else:
 							target_sprite.get_damage(self.player,attack_sprite.sprite_type)
-
 
 	def damage_player(self,amount,attack_type):
 		if self.player.vulnerable:
@@ -138,38 +136,56 @@ class Level:
 
 		self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
 
->>>>>>> Stashed changes
-	def run(self):
-		# update and draw the game
-		self.visible_sprites.custom_draw(self.player)
-		self.visible_sprites.update()
+	def add_exp(self,amount):
 
-class YsortCameraGroup(pygame.sprite.Group):
+		self.player.exp += amount
+
+	def toggle_menu(self):
+
+		self.game_paused = not self.game_paused 
+
+	def run(self):
+		self.visible_sprites.custom_draw(self.player)
+		self.ui.display(self.player)
+		
+		if self.game_paused:
+			self.upgrade.display()
+		else:
+			self.visible_sprites.update()
+			self.visible_sprites.enemy_update(self.player)
+			self.player_attack_logic()
+		
+
+class YSortCameraGroup(pygame.sprite.Group):
 	def __init__(self):
 
-		#general setup
+		# general setup 
 		super().__init__()
 		self.display_surface = pygame.display.get_surface()
-		self.half_width = self.display_surface.get_size()[0] // 2 # [0] == x
-		self.half_height = self.display_surface.get_size()[1] // 2 # [1] == Y
-		self. offset = pygame.math.Vector2()
+		self.half_width = self.display_surface.get_size()[0] // 2
+		self.half_height = self.display_surface.get_size()[1] // 2
+		self.offset = pygame.math.Vector2()
 
-		#creating the floor
-		self.floor_surf = pygame.image.load("NinjaAdventure/graphics/tilemap/ground.png").convert()
+		# creating the floor
+		self.floor_surf = pygame.image.load('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/tilemap/ground.png').convert()
 		self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
 
+	def custom_draw(self,player):
 
-	def custom_draw(self, player):
-
-		# getting the offset
+		# getting the offset 
 		self.offset.x = player.rect.centerx - self.half_width
 		self.offset.y = player.rect.centery - self.half_height
 
-		#drawing the floor
+		# drawing the floor
 		floor_offset_pos = self.floor_rect.topleft - self.offset
 		self.display_surface.blit(self.floor_surf,floor_offset_pos)
 
-		#for sprite in self.sprites():
+		# for sprite in self.sprites():
 		for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery):
 			offset_pos = sprite.rect.topleft - self.offset
 			self.display_surface.blit(sprite.image,offset_pos)
+
+	def enemy_update(self,player):
+		enemy_sprites = [sprite for sprite in self.sprites() if hasattr(sprite,'sprite_type') and sprite.sprite_type == 'enemy']
+		for enemy in enemy_sprites:
+			enemy.enemy_update(player)

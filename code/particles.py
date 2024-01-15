@@ -6,37 +6,37 @@ class AnimationPlayer:
 	def __init__(self):
 		self.frames = {
 			# magic
-			'flame': import_folder('NinjaAdventure/graphics/particles/flame/frames'),
-			'aura': import_folder('NinjaAdventure/graphics/particles/aura'),
-			'heal': import_folder('NinjaAdventure/graphics/particles/heal/frames'),
+			'flame': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/flame/frames'),
+			'aura': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/aura'),
+			'heal': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/heal/frames'),
 			
 			# attacks 
-			'claw': import_folder('NinjaAdventure/graphics/particles/claw'),
-			'slash': import_folder('NinjaAdventure/graphics/particles/slash'),
-			'sparkle': import_folder('NinjaAdventure/graphics/particles/sparkle'),
-			'leaf_attack': import_folder('NinjaAdventure/graphics/particles/leaf_attack'),
-			'thunder': import_folder('NinjaAdventure/graphics/particles/thunder'),
+			'claw': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/claw'),
+			'slash': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/slash'),
+			'sparkle': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/sparkle'),
+			'leaf_attack': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf_attack'),
+			'thunder': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/thunder'),
 
 			# monster deaths
-			'squid': import_folder('NinjaAdventure/graphics/particles/smoke_orange'),
-			'raccoon': import_folder('NinjaAdventure/graphics/particles/raccoon'),
-			'spirit': import_folder('NinjaAdventure/graphics/particles/nova'),
-			'bamboo': import_folder('NinjaAdventure/graphics/particles/bamboo'),
+			'squid': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/smoke_orange'),
+			'raccoon': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/raccoon'),
+			'spirit': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/nova'),
+			'bamboo': import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/bamboo'),
 			
 			# leafs 
 			'leaf': (
-				import_folder('NinjaAdventure/graphics/particles/leaf1'),
-				import_folder('NinjaAdventure/graphics/particles/leaf2'),
-				import_folder('NinjaAdventure/graphics/particles/leaf3'),
-				import_folder('NinjaAdventure/graphics/particles/leaf4'),
-				import_folder('NinjaAdventure/graphics/particles/leaf5'),
-				import_folder('NinjaAdventure/graphics/particles/leaf6'),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf1')),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf2')),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf3')),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf4')),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf5')),
-				self.reflect_images(import_folder('NinjaAdventure/graphics/particles/leaf6'))
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf1'),
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf2'),
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf3'),
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf4'),
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf5'),
+				import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf6'),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf1')),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf2')),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf3')),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf4')),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf5')),
+				self.reflect_images(import_folder('C:/Users/Nameless/Documents/Github/Repository/NinjaAdventure/graphics/particles/leaf6'))
 				)
 			}
 	
@@ -44,13 +44,13 @@ class AnimationPlayer:
 		new_frames = []
 
 		for frame in frames:
-				flipped_frame = pygame.transform.flip(frame,True,False)
-				new_frames.append(flipped_frame)
+	 		flipped_frame = pygame.transform.flip(frame,True,False)
+	 		new_frames.append(flipped_frame)
 		return new_frames
 
 	def create_grass_particles(self,pos,groups):
-		animation_frames = choice(self.frames['leaf'])
-		ParticleEffect(pos,animation_frames,groups)
+	 	animation_frames = choice(self.frames['leaf'])
+	 	ParticleEffect(pos,animation_frames,groups)
 
 	def create_particles(self,animation_type,pos,groups):
 		animation_frames = self.frames[animation_type]
