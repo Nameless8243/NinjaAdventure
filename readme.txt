@@ -26,10 +26,6 @@ To play Ninja Adventure, follow these simple steps:
     Download the game files.
     Locate the ninja_adventure.exe file.
     Double-click the ninja_adventure.exe file to launch the game.
-	
-Screenshots
-
---//--
 
 known issues
 
